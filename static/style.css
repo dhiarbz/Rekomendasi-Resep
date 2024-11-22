@@ -1,0 +1,85 @@
+html{
+    scroll-behavior: smooth;
+}
+body {
+    background-color: #ffeae0;
+}
+.navbar{
+    background-color: transparent;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .navbar-brand b{
+    color: #ff511c;
+}
+
+.navbar-nav .nav-link{
+    color: #555;
+    transition: color 0.3s,background-color 0.3s;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link:hover{
+    color: #ff511c;
+}
+
+.nav-link.active::after {
+    content: '';
+    display: block;
+    width: 50%;
+    height: 3px;
+    background-color: #ff511c;
+    margin: 3px auto 0;
+}
+.btn-signup {
+    background-color: #ff511c;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.btn-signup:hover{   
+    transition: 0.3s;
+    border: 1px solid #e64917;
+}
+
+.content img {
+    animation: rotate 10s linear infinite;
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.card {
+    border: 2px solid #faad96;
+    border-radius: 10px;
+    background-color: #fff;
+}
+.card img {
+    width: 150px;
+    position: relative;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+.food-title h1 {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+.desc-food p {
+    font-size: 13px;
+    text-align: center;
+}
+.price {
+    display: flex;
+    justify-content: space-between;
+}
+

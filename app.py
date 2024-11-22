@@ -15,7 +15,8 @@ model = tfidf.transform(df['Ingredients'])  # Assuming 'Ingredients' is the rele
 
 @app.route('/')
 def index():
-    return render_template('resepindo.html')
+    return render_template('index.html')
+
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -37,7 +38,7 @@ def search():
 
     # Calculate cosine similarities
     cosine_similarities = cosine_similarity(query_vector, model).flatten()
-    top_indices = cosine_similarities.argsort()[-5:][::-1]  # 5 top recommendations
+    top_indices = cosine_similarities.argsort()[-3:][::-1]  # 5 top recommendations
 
     # Retrieve recommended recipes based on indices
     results = []
