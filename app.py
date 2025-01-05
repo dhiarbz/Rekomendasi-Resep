@@ -1,46 +1,62 @@
 from flask import Flask, render_template, request, jsonify
 import joblib
 import pandas as pd
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import logging
 
 app = Flask(__name__)
 
-# Load the TF-IDF vectorizer and the recipe model
-tfidf = joblib.load('vectorizer.pkl')
-df = pd.read_csv('Indonesia_food_dataset.csv')
+# Logging setup
+logging.basicConfig(level=logging.INFO)
 
-# Create a TF-IDF representation of the dataset ingredients
-df['Ingredients'] = df['Ingredients'].fillna('') 
-model = tfidf.transform(df['Ingredients'])  # Assuming 'Ingredients' is the relevant column
+# Load TF-IDF model and dataset
+try:
+    tfidf = joblib.load('vectorizer.pkl')
+    df = pd.read_csv('Indonesia_food_dataset.csv')
+    df['Ingredients'] = df['Ingredients'].fillna('')
+    model = tfidf.transform(df['Ingredients'])
+except FileNotFoundError as e:
+    raise RuntimeError(f"File tidak ditemukan: {e}")
+except Exception as e:
+    raise RuntimeError(f"Kesalahan saat memuat model atau data: {e}")
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/search', methods=['POST'])
 def search():
-    bahan1 = request.json.get('bahan1', '')
-    bahan2 = request.json.get('bahan2', '')
-    bahan3 = request.json.get('bahan3', '')
+    """
+    Cari resep berdasarkan bahan yang diberikan.
+
+    Request Body (JSON):
+        - bahan1: string
+        - bahan2: string
+        - bahan3: string
+    
+    Response (JSON):
+        - Masakan: Nama masakan
+        - Bahan: Bahan yang digunakan
+        - Langkah: Langkah memasak
+    """
+    bahan1 = request.json.get('bahan1', '').strip()
+    bahan2 = request.json.get('bahan2', '').strip()
+    bahan3 = request.json.get('bahan3', '').strip()
     query_all = ' '.join([bahan1, bahan2, bahan3]).strip()
-    
-    # Handle empty query
+
     if not query_all:
-        return jsonify([])  # Return an empty list if no ingredients are provided
+        return jsonify({"error": "Harap masukkan minimal satu bahan untuk mencari resep"}), 400
 
-    # Transform the query into the same TF-IDF format
     query_vector = tfidf.transform([query_all])
-    
-    # Debugging information
-    print("Query vector shape:", query_vector.shape)
-    print("Model shape:", model.shape)
+    app.logger.info(f"Query vector shape: {query_vector.shape}")
+    app.logger.info(f"Model shape: {model.shape}")
 
-    # Calculate cosine similarities
+    # Calculate similarities
     cosine_similarities = cosine_similarity(query_vector, model).flatten()
-    top_indices = cosine_similarities.argsort()[-3:][::-1]  # 5 top recommendations
+    top_indices = np.argpartition(-cosine_similarities, 3)[:3]
+    top_indices = top_indices[np.argsort(-cosine_similarities[top_indices])]
 
-    # Retrieve recommended recipes based on indices
     results = []
     for idx in top_indices:
         recipe = df.iloc[idx]
@@ -49,7 +65,7 @@ def search():
             "Bahan": recipe['Ingredients'], 
             "Langkah": recipe['Steps']
         })
-    
+
     return jsonify(results)
 
 if __name__ == '__main__':

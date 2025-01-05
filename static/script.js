@@ -65,6 +65,7 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
         card.className = "card h-100";
     
         // Convert bahan dan langkah ke format daftar jika berupa string
+        const title = result.Masakan || "Tidak diketahui";
         const bahanList = result.Bahan.split("--").filter(item => item.trim() !== "");
         const langkahList = result.Langkah.split("--").filter(item => item.trim() !== "");
     
@@ -73,16 +74,32 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
     
         // Buat daftar langkah
         const langkahHTML = langkahList.map((item, index) => `<li>${index + 1}. ${item.trim()}</li>`).join("");
+        const imageUrl = `https://source.unsplash.com/600x400/?${encodeURIComponent(result.Masakan || "Tidak diketahui")}`;
     
+        // kode lama
+        // card.innerHTML = `
+        //     <div class="card-body">
+        //         <h5 class="card-title">${result.Masakan || "Tidak diketahui"}</h5>
+        //         <h6 class="card-subtitle mb-2 text-muted">Bahan</h6>
+        //         <ol class="card-text">${bahanHTML}</ol>
+        //         <h6 class="card-subtitle mb-2 text-muted">Langkah</h6>
+        //         <ol class="card-text">${langkahHTML}</ol>
+        //         <a href="#" class="btn btn-signup " >Selengkapnya</a>
+        //     </div>
+        // `;
+
+        // kode baru
         card.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">${result.Masakan || "Tidak diketahui"}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Bahan</h6>
-                <ol class="card-text">${bahanHTML}</ol>
-                <h6 class="card-subtitle mb-2 text-muted">Langkah</h6>
-                <ol class="card-text">${langkahHTML}</ol>
-            </div>
-        `;
+    <div class="card-body">
+        <img src="${imageUrl}" alt="${result.Masakan || "Tidak diketahui"}" class="img-fluid">
+        <h5 class="card-title">${result.Masakan || "Tidak diketahui"}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Bahan</h6>
+        <ol class="card-text">${bahanHTML}</ol>
+        <h6 class="card-subtitle mb-2 text-muted">Langkah</h6>
+        <ol class="card-text">${langkahHTML}</ol>
+        <a href="#" class="btn btn-signup">Selengkapnya</a>
+    </div>
+`;
     
         cardCol.appendChild(card);
         cardContainer.appendChild(cardCol);
