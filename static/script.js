@@ -91,7 +91,6 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
         // kode baru
         card.innerHTML = `
     <div class="card-body">
-        <img src="${imageUrl}" alt="${result.Masakan || "Tidak diketahui"}" class="img-fluid">
         <h5 class="card-title">${result.Masakan || "Tidak diketahui"}</h5>
         <h6 class="card-subtitle mb-2 text-muted">Bahan</h6>
         <ol class="card-text">${bahanHTML}</ol>
